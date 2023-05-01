@@ -15,9 +15,15 @@
 #include <stdbool.h>
 #include <dirent.h>
 
+#define MAX_LEN (1024)
+
+static char * file_error = "ERROR with file"; 
+
 void send_file_to_socket(const char * filename, int socket);
 
 void recv_file_from_socket(const char * filename, int socket);
+
+int get_file_size(FILE * file);
 
 
 #endif
