@@ -80,6 +80,7 @@ int recv_file_from_socket(const char * filename, int socket)
         if(bytes_read < 0){
             perror("error reading from socket");
             fclose(file);
+            return -1;
         }
 
         fwrite(buff, sizeof(char), bytes_read, file);
