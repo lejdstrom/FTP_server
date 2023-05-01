@@ -10,7 +10,7 @@ int get_file_size(FILE * file_ptr)
     return file_size;
 }
 
-void send_file_to_socket(const char * filename, int socket)
+int send_file_to_socket(const char * filename, int socket)
 {
     FILE * file = fopen(filename, "rb");
     char buff[MAX_LEN] = {};
@@ -19,7 +19,7 @@ void send_file_to_socket(const char * filename, int socket)
     if(file == NULL){
         printf("%s: %s\n", file_error ,filename);
         write(socket, file_error, strlen(file_error));
-        return;
+        return -1;
     }
 
     // will help to display a progress bar
@@ -33,36 +33,60 @@ void send_file_to_socket(const char * filename, int socket)
         if (bytes_read < bytes_to_read)
         {
             perror("file read");
-            exit(EXIT_FAILURE);
+            fclose(file);
+            return -1;
         }
-        if (send(socket, buff, bytes_read, 0) < 0)
+
+        // handle partial sent
+        size_t bytes_sent = 0;
+        while (bytes_sent < bytes_read)
         {
-            perror("send");
-            exit(EXIT_FAILURE);
+            size_t res = send(socket, buff + bytes_sent, bytes_read - bytes_sent, 0);
+            
+            if (res < 0)
+            {
+                perror("send");
+                fclose(file);
+                return -1;
+            }
+            bytes_sent += res;
         }
+
         file_size -= bytes_read;
     }
     
     fclose(file);
     close(socket);
+    return 0; // success
 }
 
-void recv_file_from_socket(const char * filename, int socket)
+int recv_file_from_socket(const char * filename, int socket)
 {
     FILE * file = fopen(filename, "wb");
     char buff[MAX_LEN] = {};
+    const size_t MAX_READ_LEN = MAX_LEN -1;
 
     if (file == NULL)
     {
         printf("%s: %s\n", file_error, filename);
-        return;
+        return -1;
     }
 
-    while (read(socket, buff, MAX_LEN) > 0)
+    size_t bytes_read;
+    do
     {
-        fwrite(buff, sizeof(char), strlen(buff), file);
-        memset(buff, 0, sizeof(buff));
-    }
+        bytes_read = read(socket, buff, MAX_READ_LEN);
+        
+        if(bytes_read < 0){
+            perror("error reading from socket");
+            fclose(file);
+        }
 
+        fwrite(buff, sizeof(char), bytes_read, file);
+        memset(buff, 0, MAX_LEN);
+
+    } while (bytes_read > 0);
+    
     fclose(file);
+    return 0;
 }
