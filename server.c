@@ -2,7 +2,34 @@
 
 void handle_connection(int client_socket)
 {
+    char buffer[MAX_LEN];
 
+    int n;
+    int new_socket = client_socket;
+
+    n = recv(new_socket, buffer, MAX_LEN, 0);
+
+    if (n < 0)
+    {
+        perror("server error receiving data");
+        goto exit;
+    }
+
+    // null terminate the message
+    buffer[n] = 0;
+    printf("server recv: %s\n", buffer);
+
+    // client want us to send him a file
+    if(send_file_to_socket(buffer, new_socket) < 0)
+    {
+        goto exit;
+    }
+
+
+
+exit:
+    close(new_socket);
+    return;
 }
 
 int main(int argc, char **argv)
