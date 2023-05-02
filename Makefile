@@ -11,7 +11,7 @@ commons.o: commons.c commons.h
 	gcc -Wall -c -g commons.c
 
 debug_server:
-	gdb --args ./server 54321
+	gdb --args ./server 12345
 
 debug_client:
 	gdb --args ./client 12345
