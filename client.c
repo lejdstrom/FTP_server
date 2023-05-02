@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
     while (true)
     {
-           /* Create a socket */
+        /* Create a socket */
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd < 0)
         {
