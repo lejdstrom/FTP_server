@@ -10,6 +10,12 @@ int get_file_size(FILE * file_ptr)
     return file_size;
 }
 
+
+/**
+ * 
+ * client: upload <filename>                    server: getfilename
+ * client: send_file_to_socket(server_sock)     server: recv_file_from_socket()
+*/
 int send_file_to_socket(const char * filename, int socket)
 {
     FILE * file = fopen(filename, "rb");
