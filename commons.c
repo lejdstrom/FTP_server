@@ -26,7 +26,7 @@ int send_file_to_socket(const char * filename, int socket)
 
     if(file == NULL){
         printf(": %s\n",filename);
-        //write(socket, file_error, strlen(file_error));
+        write(socket, "file not found", strlen("file not found"));
         return -1;
     }
 

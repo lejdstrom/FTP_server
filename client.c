@@ -54,6 +54,20 @@ int main(int argc, char **argv)
             return 1;
         }
 
+        // if file was not found on the server
+        // we create a file with error message in it
+        // we should handle it better
+
+        char buftmp[MAX_LEN];
+
+        int n = recv(sockfd, buftmp, MAX_LEN, 0);
+        buftmp[n] = 0;
+
+        if(!strcmp(buftmp, "file not found")){
+            printf("file not found\n");
+            continue;
+        }
+
         //debug
         char copy[MAX_LEN];
         printf("buffer: %s\n", buffer);
