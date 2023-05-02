@@ -12,7 +12,7 @@ int main(int argc, char **argv)
         printf("Usage: %s <port>\n", argv[0]);
         return 1;
     }
-    int sockfd, new_sock;
+    int sockfd;
     struct sockaddr_in servaddr = {}, cliaddr = {};
     socklen_t len = sizeof(cliaddr);
 
