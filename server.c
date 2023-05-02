@@ -2,8 +2,10 @@
 
 void handle_connection(int client_socket)
 {
-    char buffer[MAX_LEN];
 
+    printf("connection accepted - id: %d\n", client_socket);
+
+    char buffer[MAX_LEN];
     int n;
     int new_socket = client_socket;
 
@@ -28,6 +30,7 @@ void handle_connection(int client_socket)
 
 
 exit:
+    printf("closing socket %d\n", new_socket);
     close(new_socket);
     return;
 }
@@ -69,12 +72,14 @@ int main(int argc, char **argv)
 
     while (true)
     {
+        printf("waiting for connections ...\n");
         int new_sock = accept(sockfd, (struct sockaddr *)&cliaddr, (socklen_t*)&len);
         if (new_sock < 0)
         {
             perror("accept failed");
             return 1;
         }
+        printf("connected\n");
 
         handle_connection(new_sock);
     }

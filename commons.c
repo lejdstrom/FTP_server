@@ -18,18 +18,23 @@ int get_file_size(FILE * file_ptr)
 */
 int send_file_to_socket(const char * filename, int socket)
 {
+    printf("in send_file_to_socket func\nfilename: %s\n", filename);
+
     FILE * file = fopen(filename, "rb");
     char buff[MAX_LEN] = {};
     int file_size;
 
     if(file == NULL){
-        printf("%s: %s\n", file_error ,filename);
-        write(socket, file_error, strlen(file_error));
+        printf(": %s\n",filename);
+        //write(socket, file_error, strlen(file_error));
         return -1;
     }
 
+
     // will help to display a progress bar
     file_size = get_file_size(file);
+
+    printf("file size: %d\n", file_size);
 
     while (file_size > 0)
     {
@@ -60,7 +65,34 @@ int send_file_to_socket(const char * filename, int socket)
 
         file_size -= bytes_read;
     }
-    
+/*
+   while (true)
+   {
+        char buff[MAX_LEN] = {};
+        int read = fread(buff, sizeof(char), MAX_LEN, file);
+
+        if(read > 0)
+        {
+            printf("sending...\n");
+            write(socket, buff, MAX_LEN);
+        }
+
+        if(read < MAX_LEN)
+        {
+            if(feof(file)){
+                printf("transfer complete to: %d\n", socket);
+                break;
+            }
+            if(ferror(file)){
+                printf("error with file\n");
+                break;
+            }
+        }
+        
+   }
+   */
+   
+    printf("closing connection for: %d\n", socket);
     fclose(file);
     close(socket);
     return 0; // success
@@ -68,8 +100,8 @@ int send_file_to_socket(const char * filename, int socket)
 
 int recv_file_from_socket(const char * filename, int socket)
 {
-    FILE * file = fopen(filename, "wb");
-    char buff[MAX_LEN] = {};
+    FILE * file = fopen(filename, "ab");
+    
     const size_t MAX_READ_LEN = MAX_LEN -1;
 
     if (file == NULL)
@@ -78,9 +110,12 @@ int recv_file_from_socket(const char * filename, int socket)
         return -1;
     }
 
+    printf("receving file...\n");
+
     size_t bytes_read;
     do
     {
+        char buff[MAX_LEN] = {};
         bytes_read = read(socket, buff, MAX_READ_LEN);
         
         if(bytes_read < 0){
@@ -90,9 +125,10 @@ int recv_file_from_socket(const char * filename, int socket)
         }
 
         fwrite(buff, sizeof(char), bytes_read, file);
-        memset(buff, 0, MAX_LEN);
 
     } while (bytes_read > 0);
+
+    printf("file downloaded\n");
     
     fclose(file);
     return 0;

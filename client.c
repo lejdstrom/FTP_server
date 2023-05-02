@@ -35,11 +35,12 @@ int main(int argc, char **argv)
 
         // connect is a fd to server
         // test download logic
-
+        puts("please enter a filename you want to dl");
         char buffer[MAX_LEN];
 
         // get filename
         fgets(buffer, MAX_LEN - 1, stdin);
+        buffer[strcspn(buffer, "\n")] = 0;
 
         if (!strncmp(buffer, "exit", 4))
         {
@@ -54,10 +55,15 @@ int main(int argc, char **argv)
         }
 
         //debug
+        char copy[MAX_LEN];
         printf("buffer: %s\n", buffer);
+        strcpy(copy, buffer);
+        strcat(copy, "_copy");
+
+        printf("copy: %s\n", copy);
 
         // we are now waiting to get the file from server
-        if(recv_file_from_socket(buffer, sockfd) < 0)
+        if(recv_file_from_socket(copy, sockfd) < 0)
         {
             puts("problem while dl...");
             break;
