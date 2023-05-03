@@ -19,19 +19,10 @@ int main(int argc, char **argv)
     while (true)
     {
         /* Create a socket */
-        sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        if (sockfd < 0)
-        {
-            perror("Warning creating socket");
-            return 1;
-        }
-
+        check(sockfd = socket(AF_INET, SOCK_STREAM, 0), "Warning creating socket");
+        
         /* Connect to server */
-        if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
-        {
-            perror("Warning connecting");
-            return 1;
-        }
+        check(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0, "Warning connecting");
 
         // connect is a fd to server
         // test download logic
@@ -39,7 +30,8 @@ int main(int argc, char **argv)
         char buffer[MAX_LEN];
 
         // get filename
-        fgets(buffer, MAX_LEN - 1, stdin);
+        fgets(buffer, MAX_LEN, stdin);
+        // remove new line
         buffer[strcspn(buffer, "\n")] = 0;
 
         if (!strncmp(buffer, "exit", 4))
@@ -47,19 +39,11 @@ int main(int argc, char **argv)
             puts("Exiting...");
             break;
         }
-        // send filename
-        if (send(sockfd, buffer, MAX_LEN, 0) < 0)
-        {
-            perror("Client error sending data");
-            return 1;
-        }
 
-        // if file was not found on the server
-        // we create a file with error message in it
-        // we should handle it better
+        // send filename
+        check(send(sockfd, buffer, MAX_LEN, 0) < 0, "Client error sending data");
 
         char buftmp[MAX_LEN];
-
         int n = recv(sockfd, buftmp, MAX_LEN, 0);
         buftmp[n] = 0;
 
@@ -68,13 +52,10 @@ int main(int argc, char **argv)
             continue;
         }
 
-        //debug
+        // we add _copy to filename
         char copy[MAX_LEN];
-        //printf("buffer: %s\n", buffer);
         strcpy(copy, buffer);
         strcat(copy, "_copy");
-
-        //printf("copy: %s\n", copy);
 
         // we are now waiting to get the file from server
         if(recv_file_from_socket(copy, sockfd) < 0)
@@ -82,8 +63,6 @@ int main(int argc, char **argv)
             puts("problem while dl...");
             break;
         }
-
     }
-
     return 0;
 }

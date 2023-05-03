@@ -10,11 +10,18 @@ int get_file_size(FILE *file_ptr)
     return file_size;
 }
 
-/**
- *
- * client: upload <filename>                    server: getfilename
- * client: send_file_to_socket(server_sock)     server: recv_file_from_socket()
- */
+// if value < 0 return -1 == error and write error message
+// else return 0 == success
+int check(int value_to_test, const char * error_message)
+{
+    if(value_to_test < 0){
+        perror(error_message);
+        return -1;
+    }
+    return 0;
+}
+
+// send filename (if exist) to socket
 int send_file_to_socket(const char *filename, int socket)
 {
 #ifdef DEBUG
@@ -32,7 +39,6 @@ int send_file_to_socket(const char *filename, int socket)
         return -1;
     }
 
-    // will help to display a progress bar
     file_size = get_file_size(file);
     int file_size_copy = file_size;
 
@@ -75,6 +81,8 @@ int send_file_to_socket(const char *filename, int socket)
     return 0; // success
 }
 
+// create a local file named filename_copy
+// and recv data from socket
 int recv_file_from_socket(const char *filename, int socket)
 {
     FILE *file = fopen(filename, "wb");

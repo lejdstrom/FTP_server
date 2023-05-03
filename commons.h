@@ -23,4 +23,6 @@ int send_file_to_socket(const char * filename, int socket);
 int recv_file_from_socket(const char * filename, int socket);
 int get_file_size(FILE * file);
 
+int check(int value_to_test, const char * error_message);
+
 #endif
