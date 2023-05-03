@@ -2,7 +2,6 @@
 
 void handle_connection(int client_socket)
 {
-
     printf("connection accepted - id: %d\n", client_socket);
 
     char buffer[MAX_LEN];
@@ -30,7 +29,9 @@ void handle_connection(int client_socket)
 
 
 exit:
-    printf("closing socket %d\n", new_socket);
+    #ifdef DEBUG
+    printf("closing socket %d\nin server.c\n", new_socket);
+    #endif
     close(new_socket);
     return;
 }

@@ -1,3 +1,5 @@
+all: server client
+
 server: server.o commons.o
 	gcc -Wall -g server.o commons.o -o server
 
@@ -17,4 +19,4 @@ debug_client:
 	gdb --args ./client 12345
 
 clean:
-	@rm -f *.o server client
+	@rm -f *.o server client *_copy

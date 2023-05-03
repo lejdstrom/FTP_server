@@ -10,7 +10,6 @@ int get_file_size(FILE * file_ptr)
     return file_size;
 }
 
-
 /**
  * 
  * client: upload <filename>                    server: getfilename
@@ -18,7 +17,9 @@ int get_file_size(FILE * file_ptr)
 */
 int send_file_to_socket(const char * filename, int socket)
 {
+    #ifdef DEBUG
     printf("in send_file_to_socket func\nfilename: %s\n", filename);
+    #endif
 
     FILE * file = fopen(filename, "rb");
     char buff[MAX_LEN] = {};
@@ -30,68 +31,41 @@ int send_file_to_socket(const char * filename, int socket)
         return -1;
     }
 
-
     // will help to display a progress bar
     file_size = get_file_size(file);
+    int file_size_copy = file_size;
 
+    #ifdef DEBUG
     printf("file size: %d\n", file_size);
+    #endif
+
+    // send empty buffer fix a bug
+    // do not remove without testing !
+    memset(buff, 0, MAX_LEN);
+    send(socket, buff, MAX_LEN, 0);
 
     while (file_size > 0)
-    {
-        size_t bytes_to_read = (file_size < MAX_LEN) ? file_size : MAX_LEN;
-        size_t bytes_read = fread(buff, sizeof(char), bytes_to_read, file);
+    {  
+        int bytes_read = fread(buff, sizeof(char), MAX_LEN, file);
+        printf("bytes_read: %d\n", bytes_read);
+        
+        // handle partial sent
+        int bytes_sent = 0;
+        int res = send(socket, buff, bytes_read, 0);
+        memset(buff, 0, MAX_LEN);
+        printf("sent: %d/%d\n", bytes_sent, file_size_copy);
 
-        if (bytes_read < bytes_to_read)
+        if (res < 0)
         {
-            perror("file read");
+            perror("send");
             fclose(file);
             return -1;
         }
 
-        // handle partial sent
-        size_t bytes_sent = 0;
-        while (bytes_sent < bytes_read)
-        {
-            size_t res = send(socket, buff + bytes_sent, bytes_read - bytes_sent, 0);
-            
-            if (res < 0)
-            {
-                perror("send");
-                fclose(file);
-                return -1;
-            }
-            bytes_sent += res;
-        }
-
+        bytes_sent += res;
         file_size -= bytes_read;
     }
-/*
-   while (true)
-   {
-        char buff[MAX_LEN] = {};
-        int read = fread(buff, sizeof(char), MAX_LEN, file);
 
-        if(read > 0)
-        {
-            printf("sending...\n");
-            write(socket, buff, MAX_LEN);
-        }
-
-        if(read < MAX_LEN)
-        {
-            if(feof(file)){
-                printf("transfer complete to: %d\n", socket);
-                break;
-            }
-            if(ferror(file)){
-                printf("error with file\n");
-                break;
-            }
-        }
-        
-   }
-   */
-   
     printf("closing connection for: %d\n", socket);
     fclose(file);
     close(socket);
@@ -100,24 +74,30 @@ int send_file_to_socket(const char * filename, int socket)
 
 int recv_file_from_socket(const char * filename, int socket)
 {
-    FILE * file = fopen(filename, "ab");
-    
-    const size_t MAX_READ_LEN = MAX_LEN -1;
+    FILE * file = fopen(filename, "wb");
+    char buff[MAX_LEN] = {};
+    //const size_t MAX_READ_LEN = MAX_LEN -1;
 
     if (file == NULL)
     {
         printf("%s: %s\n", file_error, filename);
         return -1;
     }
-
-    printf("receving file...\n");
-
-    size_t bytes_read;
+    // test
+    int a = recv(socket, buff, MAX_LEN, 0);
+    int size = 0;
+    sscanf(buff, "%d", &size);
+    printf("\treceving size: %d\n", size);
+    //
+    ssize_t bytes_read, total_bytes = 0;
     do
     {
-        char buff[MAX_LEN] = {};
-        bytes_read = read(socket, buff, MAX_READ_LEN);
+        memset(buff, 0, MAX_LEN);
         
+        bytes_read = recv(socket,buff,MAX_LEN,0);/*read(socket, buff, MAX_LEN);*/
+        
+        printf("bytes read %d\n", bytes_read);
+
         if(bytes_read < 0){
             perror("error reading from socket");
             fclose(file);
