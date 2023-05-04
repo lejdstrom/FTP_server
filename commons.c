@@ -1,5 +1,6 @@
 #include "commons.h"
 
+// we assume file_ptr not null
 int get_file_size(FILE *file_ptr)
 {
     int file_size = 0;
@@ -82,7 +83,7 @@ int send_file_to_socket(const char *filename, int socket)
 }
 
 // create a local file named filename_copy
-// and recv data from socket
+// and write data from socket into
 int recv_file_from_socket(const char *filename, int socket)
 {
     FILE *file = fopen(filename, "wb");

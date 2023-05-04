@@ -1,5 +1,10 @@
 #include "commons.h"
 
+void display_client_menu()
+{
+    printf("dl <filename>\nup <filename\nls");
+}
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -24,9 +29,11 @@ int main(int argc, char **argv)
         /* Connect to server */
         check(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)), "Warning connecting");
 
+        display_client_menu();
         // connect is a fd to server
         // test download logic
-        puts("please enter a filename you want to dl");
+        puts("\nplease enter a filename you want to dl");
+        printf(">>> ");
         char buffer[MAX_LEN];
 
         // get filename
