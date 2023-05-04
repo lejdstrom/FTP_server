@@ -25,4 +25,11 @@ int get_file_size(FILE * file);
 
 int check(int value_to_test, const char * error_message);
 
+
+typedef enum{
+    LIST, UPLOAD, DOWNLOAD, MKDIR, CD, EXIT, UNKNOW
+}FTP_COMMANDS;
+
+FTP_COMMANDS parse_ftp_cmd(const char * client_message);
+
 #endif

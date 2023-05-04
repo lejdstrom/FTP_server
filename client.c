@@ -47,6 +47,34 @@ int main(int argc, char **argv)
         // remove new line
         buffer[strcspn(buffer, "\n")] = 0;
 
+
+        switch (parse_ftp_cmd(buffer))
+        {
+        case DOWNLOAD:
+            /* code */
+            break;
+        case UPLOAD:
+            break;
+
+        case LIST:
+            break;
+
+        case MKDIR:
+            break;
+
+        case CD:
+            break;
+
+        case EXIT:
+            break;
+
+        case UNKNOW:
+            break;
+
+        default:
+            break;
+        }
+
         if (!strncmp(buffer, "exit", 4))
         {
             puts("Exiting...");

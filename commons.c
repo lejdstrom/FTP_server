@@ -119,3 +119,35 @@ int recv_file_from_socket(const char *filename, int socket)
     fclose(file);
     return 0;
 }
+
+FTP_COMMANDS parse_ftp_cmd(const char * client_message)
+{
+    if (!strncmp(client_message, "ls", 2))
+    {
+        return LIST;
+    }
+    else if (!strncmp(client_message, "dl", 2))
+    {
+        return DOWNLOAD;
+    }
+    else if (!strncmp(client_message, "up", 2))
+    {
+        return UPLOAD;
+    }
+    else if (!strncmp(client_message, "cd", 2))
+    {
+        return CD;
+    }
+    else if (!strncmp(client_message, "mkdir", 5))
+    {
+        return MKDIR;
+    }
+    else if(!strncmp(client_message, "exit", 5))
+    {
+        return EXIT;
+    }
+    else
+    {
+        return UNKNOW;
+    }
+}
