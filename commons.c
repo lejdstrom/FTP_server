@@ -52,6 +52,8 @@ int send_file_to_socket(const char *filename, int socket)
     memset(buff, 0, MAX_LEN);
     send(socket, buff, MAX_LEN, 0);
 
+    int bytes_sent = 0;
+
     while (file_size > 0)
     {
         int bytes_read = fread(buff, sizeof(char), MAX_LEN, file);
@@ -60,8 +62,8 @@ int send_file_to_socket(const char *filename, int socket)
         printf("bytes_read: %d\n", bytes_read);
 #endif
 
-        int bytes_sent = 0;
         int res = send(socket, buff, bytes_read, 0);
+        bytes_sent += res;
         memset(buff, 0, MAX_LEN);
         printf("sent: %d/%d\n", bytes_sent, file_size_copy);
 
@@ -71,8 +73,6 @@ int send_file_to_socket(const char *filename, int socket)
             fclose(file);
             return -1;
         }
-
-        bytes_sent += res;
         file_size -= bytes_read;
     }
 
@@ -115,7 +115,10 @@ int recv_file_from_socket(const char *filename, int socket)
     } while (bytes_read > 0);
 
     printf("file downloaded\n");
-
+    /*
+    sleep(2);
+    system("clear");
+    */
     fclose(file);
     return 0;
 }

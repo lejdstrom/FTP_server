@@ -2,7 +2,7 @@
 
 void display_client_menu()
 {
-    puts("Welcome to ftp client\n");
+    puts("\nWelcome to ftp client\n");
     puts("Call one of the following functions:");
 
     printf("dl <filename>\t\tDownload file\n");
@@ -10,6 +10,15 @@ void display_client_menu()
     printf("ls\t\t\tList files in server\n");
     printf("exit\t\t\tClose the client\n");
 }
+
+void download_file(const char * downloade_file_name)
+{
+
+}
+
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -51,33 +60,32 @@ int main(int argc, char **argv)
         switch (parse_ftp_cmd(buffer))
         {
         case DOWNLOAD:
-            /* code */
+            // call dl
             break;
         case UPLOAD:
+            // call up
             break;
 
         case LIST:
+            // call ls
             break;
 
         case MKDIR:
+            // call mkdir
             break;
 
         case CD:
+            //call cd
             break;
 
         case EXIT:
+            goto exit;
             break;
 
         case UNKNOW:
             break;
 
         default:
-            break;
-        }
-
-        if (!strncmp(buffer, "exit", 4))
-        {
-            puts("Exiting...");
             break;
         }
 
@@ -88,6 +96,10 @@ int main(int argc, char **argv)
         int n = recv(sockfd, buftmp, MAX_LEN, 0);
         buftmp[n] = 0;
 
+        #ifdef DEBUG
+        printf("\nbuf tmp: %s\n", buftmp);
+        #endif
+        
         if(!strcmp(buftmp, "file not found")){
             printf("file not found\n");
             continue;
@@ -105,5 +117,9 @@ int main(int argc, char **argv)
             break;
         }
     }
+
+exit:
+    puts("Exiting...");
+
     return 0;
 }
