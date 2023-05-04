@@ -2,7 +2,13 @@
 
 void display_client_menu()
 {
-    printf("dl <filename>\nup <filename\nls");
+    puts("Welcome to ftp client\n");
+    puts("Call one of the following functions:");
+
+    printf("dl <filename>\t\tDownload file\n");
+    printf("up <filename\t\tUpload file\n");
+    printf("ls\t\t\tList files in server\n");
+    printf("exit\t\t\tClose the client\n");
 }
 
 int main(int argc, char **argv)
