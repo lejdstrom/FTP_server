@@ -22,7 +22,7 @@ int main(int argc, char **argv)
         check(sockfd = socket(AF_INET, SOCK_STREAM, 0), "Warning creating socket");
         
         /* Connect to server */
-        check(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0, "Warning connecting");
+        check(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)), "Warning connecting");
 
         // connect is a fd to server
         // test download logic
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         }
 
         // send filename
-        check(send(sockfd, buffer, MAX_LEN, 0) < 0, "Client error sending data");
+        check(send(sockfd, buffer, MAX_LEN, 0), "Client error sending data");
 
         char buftmp[MAX_LEN];
         int n = recv(sockfd, buftmp, MAX_LEN, 0);

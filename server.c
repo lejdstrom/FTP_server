@@ -53,8 +53,8 @@ int main(int argc, char **argv)
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(atoi(argv[1]));
 
-    check(bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0, "Warning binding socket");
-    check(listen(sockfd, 1) < 0, "Warning listenning");
+    check(bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)), "Warning binding socket");
+    check(listen(sockfd, 1), "Warning listenning");
 
     while (true)
     {
